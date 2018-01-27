@@ -1,0 +1,648 @@
+swagger: '2.0'
+info: {title: Salesforce Connect API, description: '', version: 39.0-2017.2.7.8.26}
+schemes: [https]
+produces: [application/json]
+basePath: /services/data/v39.0
+paths:
+  /lapi/object-info/{objectApiName}/picklist-values/{recordTypeId}/{fieldApiName}:
+    get:
+      description: Returns the values for a specific picklist.
+      parameters:
+      - {in: path, name: fieldApiName, required: true, type: string}
+      - {in: path, name: objectApiName, required: true, type: string}
+      - {in: path, name: recordTypeId, required: true, type: string}
+      responses:
+        '200':
+          description: Success
+          schema: {$ref: '#/definitions/PicklistValuesRepresentation'}
+  /lapi/layout/{objectApiName}:
+    get:
+      description: Returns a specific layout.
+      parameters:
+      - {in: path, name: objectApiName, required: true, type: string}
+      - {in: query, name: formFactor, type: string}
+      - enum: [Compact, Full]
+        in: query
+        name: layoutType
+        type: string
+      - enum: [Create, Edit, View]
+        in: query
+        name: mode
+        type: string
+      - {in: query, name: recordTypeId, type: string}
+      responses:
+        '200':
+          description: Success
+          schema: {$ref: '#/definitions/RecordLayoutRepresentation'}
+  /lapi/records:
+    post:
+      description: Record data collection endpoint. Supports creating new records.
+      parameters:
+      - in: body
+        name: recordInput
+        schema: {$ref: '#/definitions/RecordInputRepresentation'}
+      responses:
+        '200':
+          description: Success
+          schema: {$ref: '#/definitions/RecordRepresentation'}
+  /lapi/record-defaults/clone/{recordId}:
+    get:
+      description: Returns default values for fields for cloning a record with optional record type.
+      parameters:
+      - {in: path, name: recordId, required: true, type: string}
+      - {in: query, name: formFactor, type: string}
+      - {in: query, name: recordTypeId, type: string}
+      responses:
+        '200':
+          description: Success
+          schema: {$ref: '#/definitions/RecordDefaultsRepresentation'}
+  /lapi/record-ui/{recordIds}:
+    get:
+      description: Exposes presentation-ready metadata and data about specific records.
+      parameters:
+      - {in: path, name: recordIds, required: true, type: string}
+      - {in: query, name: formFactor, type: string}
+      - in: query
+        items:
+          type: string
+          collectionFormat: csv
+          enum: [Compact, Full]
+        name: layoutTypes
+        type: array
+      - in: query
+        items:
+          type: string
+          collectionFormat: csv
+          enum: [Create, Edit, View]
+        name: modes
+        type: array
+      - in: query
+        items: {type: string, collectionFormat: csv}
+        name: optionalFields
+        type: array
+      responses:
+        '200':
+          description: Success
+          schema: {$ref: '#/definitions/RecordUiRepresentation'}
+  /lapi/records/{recordId}:
+    delete:
+      description: Returns record data.
+      parameters:
+      - {in: path, name: recordId, required: true, type: string}
+      responses:
+        '200': {description: Success}
+    get:
+      description: Returns record data.
+      parameters:
+      - {in: path, name: recordId, required: true, type: string}
+      - in: query
+        items: {type: string, collectionFormat: csv}
+        name: fields
+        type: array
+      - in: query
+        items:
+          type: string
+          collectionFormat: csv
+          enum: [Compact, Full]
+        name: layoutTypes
+        type: array
+      - in: query
+        items:
+          type: string
+          collectionFormat: csv
+          enum: [Create, Edit, View]
+        name: modes
+        type: array
+      - in: query
+        items: {type: string, collectionFormat: csv}
+        name: optionalFields
+        type: array
+      responses:
+        '200':
+          description: Success
+          schema: {$ref: '#/definitions/RecordRepresentation'}
+    patch:
+      description: Returns record data.
+      parameters:
+      - {in: path, name: recordId, required: true, type: string}
+      - in: body
+        name: recordInput
+        schema: {$ref: '#/definitions/RecordInputRepresentation'}
+      responses:
+        '200':
+          description: Success
+          schema: {$ref: '#/definitions/RecordRepresentation'}
+  /lapi/record-defaults/create/{apiName}:
+    get:
+      description: Returns default values for fields for a new record of a particular object and optional record type.
+      parameters:
+      - {in: path, name: apiName, required: true, type: string}
+      - {in: query, name: formFactor, type: string}
+      - {in: query, name: recordTypeId, type: string}
+      responses:
+        '200':
+          description: Success
+          schema: {$ref: '#/definitions/RecordDefaultsRepresentation'}
+  /lapi/object-info/{objectApiName}:
+    get:
+      description: Returns metadata about a specific object.
+      parameters:
+      - {in: path, name: objectApiName, required: true, type: string}
+      - in: query
+        items:
+          type: string
+          collectionFormat: csv
+          enum: [Compact, Full]
+        name: layoutTypes
+        type: array
+      - in: query
+        items:
+          type: string
+          collectionFormat: csv
+          enum: [Create, Edit, View]
+        name: modes
+        type: array
+      - {in: query, name: recordTypeId, type: string}
+      responses:
+        '200':
+          description: Success
+          schema: {$ref: '#/definitions/ObjectInfoRepresentation'}
+  /lapi/records/batch/{recordIds}:
+    get:
+      description: Returns batch record data for a list of recordIds.
+      parameters:
+      - {in: path, name: recordIds, required: true, type: string}
+      - in: query
+        items: {type: string, collectionFormat: csv}
+        name: fields
+        type: array
+      - in: query
+        items:
+          type: string
+          collectionFormat: csv
+          enum: [Compact, Full]
+        name: layoutTypes
+        type: array
+      - in: query
+        items:
+          type: string
+          collectionFormat: csv
+          enum: [Create, Edit, View]
+        name: modes
+        type: array
+      - in: query
+        items: {type: string, collectionFormat: csv}
+        name: optionalFields
+        type: array
+      responses:
+        '200':
+          description: Success
+          schema: {$ref: '#/definitions/BatchRepresentation'}
+definitions:
+  AbstractPicklistValueAttributesRepresentation:
+    type: object
+    description: Additional picklist value attributes.
+    properties:
+      picklistAtrributesValueType:
+        description: Indicates the type of picklist attribute value.
+        type: string
+        enum: [LeadStatus, OpportunityStage, Standard]
+  AbstractRecordLayoutComponentRepresentation:
+    type: object
+    description: Record layout component.
+    properties:
+      componentType:
+        description: Component type.
+        type: string
+        enum: [AnalyticsCloud, Canvas, CustomLink, EmptySpace, ExpandedLookup, Field,
+          ReportChart, Separator, VisualforcePage]
+      value: {description: The value of this component. The API name of the field if the componentType is Field. The API name of the canvas app if the componentType is Canvas.,
+        type: string}
+  CanvasLayoutComponentRepresentation:
+    allOf:
+    - {$ref: '#/definitions/AbstractRecordLayoutComponentRepresentation'}
+    - type: object
+      description: Canvas record layout component.
+      properties:
+        displayLocation: {description: Display location, type: string}
+        height: {description: Height, type: string}
+        referenceId: {description: Reference ID, type: string}
+        showScroll: {description: Show scroll, type: boolean}
+        width: {description: Width, type: string}
+  ChildRelationshipRepresentation:
+    type: object
+    description: Child Relationship.
+    properties: {}
+  CustomLinkLayoutComponentRepresentation:
+    allOf:
+    - {$ref: '#/definitions/AbstractRecordLayoutComponentRepresentation'}
+    - type: object
+      description: Custom link record layout component.
+      properties:
+        behavior:
+          description: Custom Link behavior
+          type: string
+          enum: [NewWindow, NoSidebar, OnClickJavaScript, Replace, Sidebar]
+        customLinkUrl: {description: Custom link URL, type: string}
+        label: {description: Label, type: string}
+  FieldLayoutComponentRepresentation:
+    allOf:
+    - {$ref: '#/definitions/AbstractRecordLayoutComponentRepresentation'}
+    - type: object
+      description: Field record layout component.
+      properties:
+        label: {description: Label, type: string}
+  FieldRepresentation:
+    type: object
+    description: Field metadata.
+    properties:
+      apiName: {description: The API name for this field., type: string}
+      calculated: {description: 'Indicates whether the field is a custom formula field
+          (?).', type: boolean}
+      compound: {description: 'Indicates whether the field is a top level compound
+          field (or in the case of switchable_personname, might be a compound field).
+          This is calculated based on whether other accessible fields in the object
+          refer to this field as their compoundFieldName. This value will typically
+          be false for LOCATION, because of the odd way locations are handled in describes.
+          See W-3236021 for more info.', type: boolean}
+      controllerName: {description: The name of the field that controls the values of this picklist.,
+        type: string}
+      createable: {description: Indicates whether the field can be created., type: boolean}
+      custom: {description: Indicates whether the field is custom., type: boolean}
+      dataType:
+        description: Field data type.
+        type: string
+        enum: [Address, Base64, Boolean, ComplexValue, Currency, Date, DateTime, Double,
+          Email, EncryptedString, Int, Location, MultiPicklist, Percent, Phone, Picklist,
+          Reference, String, TextArea, Time, Url]
+      extraTypeInfo:
+        description: Additional data type information.
+        type: string
+        enum: [ExternalLookup, ImageUrl, IndirectLookup, PersonName, PlainTextArea,
+          RichTextArea, SwitchablePersonName]
+      filterable: {description: 'Indicates whether the field is filterable. If true,
+          then this field can be specified in the WHERE clause of a SOQL statement.',
+        type: boolean}
+      filteredLookupInfo: {description: 'If the field is a reference field type with
+          a lookup filter, this contains the lookup information.', $ref: '#/definitions/FilteredLookupInfoRepresentation'}
+      highScaleNumber: {description: Indicates whether the field stores numbers to 8 decimal places regardless of what's specified in the field details.,
+        type: boolean}
+      htmlFormatted: {description: Indicates whether the field has been formatted for HTML and should be encoded for display in HTML. Also indicates whether a field is a custom formula field that has an IMAGE text function.,
+        type: boolean}
+      label: {description: Text label that is displayed next to the field in the Salesforce user interface. This label may be localized.,
+        type: string}
+      length: {description: 'For string fields, the maximum size of the field in number
+          of Unicode characters (not bytes).', type: integer}
+      nameField: {description: Indicates whether the field is a name field., type: boolean}
+      picklistValuesUrls:
+        description: A mapping of record type IDs to API URLs to use to get picklist values for this field in the context of a record type.
+        type: object
+        additionalProperties: {type: string}
+      precision: {description: 'For double fields, indicates the maximum number of
+          digits that can be stored, on both sides of the decimal point.', type: integer}
+      reference: {description: Indicates whether the field is a foreign key reference to another record.,
+        type: boolean}
+      referenceTargetField: {description: 'For indirect lookup relationships on external
+          objects, the target custom field of the referenced object.', type: string}
+      referenceToInfos:
+        description: For fields that refer to other objects, this list includes information about the object types and name fields of the referenced objects.
+        type: array
+        items: {$ref: '#/definitions/ReferenceToInfoRepresentation'}
+      relationshipName: {description: 'The name of the relationship, if this is a
+          master-detail relationship field.', type: string}
+      required: {description: Indicates whether the field is required on create or update.,
+        type: boolean}
+      scale: {description: 'For double fields, indicates the number of digits to the
+          right of the decimal point.', type: integer}
+      sortable: {description: Indicates whether a query can sort on this field., type: boolean}
+      updateable: {description: Indicates whether the field can be updated., type: boolean}
+  FieldValueRepresentation:
+    type: object
+    description: Contains both the raw and displayable field values for a field in a Record.
+    properties:
+      displayValue: {description: 'The displayable value for a field. For a date,
+          this will be a value familiar to users rather than an ISO 8601 formatted
+          date value, which is what the raw value would be. Similarly, currency values
+          will also have a formatted display value. For data that can be localized
+          to the context user''s language using the toLabel() function, that value
+          will also be displayed here.', type: string}
+      value: {description: The value of a field in its raw data form., type: object}
+  FilteredLookupInfoRepresentation:
+    type: object
+    description: Filtered lookup info.
+    properties:
+      controllingFields:
+        description: Controlling fields when the lookup filter is dependent on the source object.
+        type: array
+        items: {type: string}
+      dependent: {description: Indicates whether the lookup filter is dependent on the source object.,
+        type: boolean}
+      optionalFilter: {description: Indicates whether the lookup filter is optional.,
+        type: boolean}
+  LeadStatusPicklistValueAttributesRepresentation:
+    allOf:
+    - {$ref: '#/definitions/AbstractPicklistValueAttributesRepresentation'}
+    - type: object
+      description: Additional picklist value attributes for lead statuses.
+      properties:
+        converted: {description: 'True if this status indicates the lead has been
+            converted, otherwise false. For more info, see the doc for the LeadStatus
+            standard object.', type: boolean}
+  LocationFieldRepresentation:
+    type: object
+    description: Represents a record field's complex location value.
+    properties:
+      latitude: {description: Gets the latitude of the location. This value maybe null if both latitude and longitude are null.,
+        type: number, format: double}
+      longitude: {description: Gets the longitude of the location. This value maybe null if both latitude and longitude are null.,
+        type: number, format: double}
+  ObjectInfoRepresentation:
+    type: object
+    description: Object metadata.
+    properties:
+      apiName: {description: The object API name., type: string}
+      createable: {description: Indicates whether the object can be created., type: boolean}
+      custom: {description: Indicates whether the object is custom., type: boolean}
+      defaultRecordTypeId: {description: 'The ID for the default record type for this
+          object, if any. Null if there is none, or only a master type.', type: string}
+      deleteable: {description: Indicates whether the object can be deleted., type: boolean}
+      feedEnabled: {description: Indicates whether the object may have feeds., type: boolean}
+      fields:
+        description: A map of field API name to information about the field. This map only contains fields relevant to the requested layout and mode.
+        type: object
+        additionalProperties: {$ref: '#/definitions/FieldRepresentation'}
+      keyPrefix: {description: The key prefix for IDs of this object., type: string}
+      label: {description: The object display label., type: string}
+      labelPlural: {description: The plural form of the object display label., type: string}
+      layoutable: {description: Indicates whether the object can have a layout., type: boolean}
+      mruEnabled: {description: Indicates whether the object may appear in Most Recently Used lists.,
+        type: boolean}
+      nameFields:
+        description: List of the API names of the fields used to identify the name field for standard and custom objects. Typically there is one name field per object, except where FirstName and LastName fields are used.
+        type: array
+        items: {type: string}
+      queryable: {description: Indicates whether the object can be queried by the context user.,
+        type: boolean}
+      recordTypeInfos:
+        description: A map of record type IDs to information about the record type. The user need not have access to all the returned record types to see them here.
+        type: object
+        additionalProperties: {$ref: '#/definitions/RecordTypeInfoRepresentation'}
+      searchable: {description: Indicates whether the object can be searched., type: boolean}
+      themeInfo: {description: Theme information for the object., $ref: '#/definitions/ThemeInfoRepresentation'}
+      updateable: {description: Indicates whether the object can be updated., type: boolean}
+  OpportunityStagePicklistValueAttributesRepresentation:
+    allOf:
+    - {$ref: '#/definitions/AbstractPicklistValueAttributesRepresentation'}
+    - type: object
+      description: Additional picklist value attributes for opportunity stages.
+      properties:
+        closed: {description: 'Indicates whether this opportunity stage value represents
+            a closed opportunity. Multiple opportunity stage values can represent
+            a closed opportunity. For more info, see the doc for the OpportunityStage
+            standard object.', type: boolean}
+        defaultProbability: {description: 'The default percentage estimate of the
+            confidence in closing a specific opportunity for this opportunity stage
+            value. May be null if forecasting is not enabled for the org. For more
+            info, see the doc for the OpportunityStage standard object.', type: number,
+          format: double}
+        forecastCategoryName: {description: 'The default forecast category value for
+            this opportunity stage value. May be null if forecasting is not enabled
+            for the org. For more info, see the doc for the OpportunityStage standard
+            object.', type: string}
+        won: {description: 'Indicates whether this opportunity stage value represents
+            a won opportunity. Multiple opportunity stage values can represent a won
+            opportunity. For more info, see the doc for the OpportunityStage standard
+            object.', type: boolean}
+  PicklistValueRepresentation:
+    type: object
+    description: A single picklist value.
+    properties:
+      attributes: {description: 'For picklist values representing the status of a
+          lead or an opportunity''s stage, this value will contain additional attributes
+          to help consumers understand the meaning of the value. Depending on the
+          PicklistValueType this could be populated with information about a LeadStatus
+          or an OpportunityStage. For any other PicklistValueType this property will
+          be null.', $ref: '#/definitions/AbstractPicklistValueAttributesRepresentation'}
+      label: {description: The displayable value of the picklist to use in a UI.,
+        type: string}
+      validFor:
+        description: If this picklist is a dependent picklist, this will be the controlling value indexes for which this value is valid. If this is an independent picklist, this list will be empty.
+        type: array
+        items: {type: integer}
+      value: {description: The value of the picklist to use in the API., type: string}
+  PicklistValuesRepresentation:
+    type: object
+    description: Picklist values for a field and scoped to a record type.
+    properties:
+      controllerValues:
+        description: |-
+          If a picklist is an independent picklist, this map will be empty. If it is a dependent picklist, then this map will contain the following:
+          Controlling field is a picklist:
+          Picklist value -> value index
+          Controlling field is a boolean:
+          If the controlling field is a boolean, then 0 will indicate false and 1 will indicate true. Values in the map will be:
+          "false": 0
+          "true": 1.
+        type: object
+        additionalProperties: {type: integer}
+      defaultValue: {description: 'The default value for the picklist, or null if
+          there isn''t one.', $ref: '#/definitions/PicklistValueRepresentation'}
+      url: {description: A self-reference URL back to the API that can be used to retrieve this payload.,
+        type: string}
+      values:
+        description: A list of the applicable values for this object-record-type-field combination.
+        type: array
+        items: {$ref: '#/definitions/PicklistValueRepresentation'}
+  RecordDefaultsRepresentation:
+    type: object
+    description: Record defaults.
+    properties:
+      layout: {description: Record layout., $ref: '#/definitions/RecordLayoutRepresentation'}
+      objectInfo: {description: Object metadata., $ref: '#/definitions/ObjectInfoRepresentation'}
+      record: {description: Pre-populated record data., $ref: '#/definitions/RecordRepresentation'}
+  RecordExceptionErrorRepresentation:
+    type: object
+    description: Record exception error.
+    properties:
+      field: {description: Field API name. May be null if no field applies., type: string}
+      fieldLabel: {description: Field label. May be null if no field applies., type: string}
+      message: {description: Error message., type: string}
+      statusCode: {description: Error status code., type: string}
+  RecordExceptionRepresentation:
+    type: object
+    description: Record exception.
+    properties:
+      errors:
+        description: General errors.
+        type: array
+        items: {$ref: '#/definitions/RecordExceptionErrorRepresentation'}
+      fieldErrors:
+        description: Field-specific errors.
+        type: object
+        additionalProperties:
+          type: array
+          items: {$ref: '#/definitions/RecordExceptionErrorRepresentation'}
+  RecordInputRepresentation:
+    type: object
+    description: Description of a record input.
+    properties:
+      apiName: {description: Object API name., type: string}
+      fields:
+        description: Field values. When this representation is deserialized from JSON, the values will be typed as JsonNode, delaying full deserialization until the resource executes, which knows the expected data types. In the case of invocation through CiJ directly, the field values should be typed as the expected data types.
+        type: object
+        additionalProperties: {type: object}
+  RecordLayoutComponentRepresentation:
+    allOf:
+    - {$ref: '#/definitions/AbstractRecordLayoutComponentRepresentation'}
+    - type: object
+      description: Concrete record layout component.
+      properties: {}
+  RecordLayoutItemRepresentation:
+    type: object
+    description: Record layout item.
+    properties:
+      editableForNew: {description: Indicates whether the item may be edited on create.,
+        type: boolean}
+      editableForUpdate: {description: Indicates whether the item may be edited on update.,
+        type: boolean}
+      label: {description: Text label for the item., type: string}
+      layoutComponents:
+        description: Components that make up the item.
+        type: array
+        items: {$ref: '#/definitions/AbstractRecordLayoutComponentRepresentation'}
+      lookupIdApiName: {description: TODO, type: string}
+      sortable: {description: Indicates whether the item is sortable., type: boolean}
+  RecordLayoutRepresentation:
+    type: object
+    description: Record layout.
+    properties:
+      id: {description: Layout ID., type: string}
+      layoutType:
+        description: Layout type.
+        type: string
+        enum: [Compact, Full]
+      mode:
+        description: Mode.
+        type: string
+        enum: [Create, Edit, View]
+      sections:
+        description: Layout sections.
+        type: array
+        items: {$ref: '#/definitions/RecordLayoutSectionRepresentation'}
+  RecordLayoutRowRepresentation:
+    type: object
+    description: Record layout row.
+    properties:
+      layoutItems:
+        description: The items in this row, from left to right. Might not extend to the last column.
+        type: array
+        items: {$ref: '#/definitions/RecordLayoutItemRepresentation'}
+  RecordLayoutSectionRepresentation:
+    type: object
+    description: Record layout section.
+    properties:
+      columns: {description: Number of columns in the section., type: integer}
+      heading: {description: Heading text for the section., type: string}
+      isCollapsed: {description: Indicates whether the section should initially be displayed as collapsed.,
+        type: boolean}
+      layoutRows:
+        description: The rows in the section.
+        type: array
+        items: {$ref: '#/definitions/RecordLayoutRowRepresentation'}
+      rows: {description: Number of rows in the section., type: integer}
+      useHeading: {description: Indicates whether the heading text is expected to be displayed.,
+        type: boolean}
+  RecordRepresentation:
+    type: object
+    description: Record.
+    properties:
+      apiName: {description: The record's object API name., type: string}
+      fields:
+        description: The field data for this record, matching the requested layout and mode.
+        type: object
+        additionalProperties: {$ref: '#/definitions/FieldValueRepresentation'}
+      id: {description: The ID of this record., type: string}
+      recordTypeInfo: {description: 'The record type info for this record, if any.',
+        $ref: '#/definitions/RecordTypeInfoRepresentation'}
+  RecordTypeInfoRepresentation:
+    type: object
+    description: Record type.
+    properties:
+      available: {description: Indicates whether this record type is available to the context user when creating a new record.,
+        type: boolean}
+      defaultRecordTypeMapping: {description: Indicates wehther this is the default record type mapping for the associated object.,
+        type: boolean}
+      master: {description: Whether this is the master record type. The master record type is the default record type that’s used when a record has no custom record type associated with it.,
+        type: boolean}
+      name: {description: The record's object API name., type: string}
+      recordTypeId: {description: The ID of this record type., type: string}
+  RecordUiRepresentation:
+    type: object
+    description: Record ui.
+    properties:
+      layouts:
+        description: Record layout.
+        type: object
+        additionalProperties:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: object
+              additionalProperties: {$ref: '#/definitions/RecordLayoutRepresentation'}
+      objectInfos:
+        description: Object metadata.
+        type: object
+        additionalProperties: {$ref: '#/definitions/ObjectInfoRepresentation'}
+      records:
+        description: Record data.
+        type: object
+        additionalProperties: {$ref: '#/definitions/RecordRepresentation'}
+  ReferenceToInfoRepresentation:
+    type: object
+    description: Information about a reference field's referenced types and the name field names of those types.
+    properties:
+      apiName: {description: The object API name of a type being referenced in a relationship.,
+        type: string}
+      nameFields:
+        description: The names of the name fields for this object type. Combined with the relationship name, you can determine how to query this type's name fields, e.g. Parent.Name. Typically there is one name field per object, except where FirstName and LastName fields are used.
+        type: array
+        items: {type: string}
+  ReportLayoutComponentRepresentation:
+    allOf:
+    - {$ref: '#/definitions/AbstractRecordLayoutComponentRepresentation'}
+    - type: object
+      description: Report record layout component.
+      properties:
+        cacheData: {description: Cache data, type: boolean}
+        error: {description: Error, type: string}
+        filter: {description: Filter, type: string}
+        hideOnError: {description: Hide on error, type: boolean}
+        placeholder: {description: Placeholder, type: string}
+        reportId: {description: Report ID, type: string}
+        showTitle: {description: Show title, type: boolean}
+        size: {description: Size, type: string}
+  ThemeInfoRepresentation:
+    type: object
+    description: Theme info.
+    properties:
+      color: {description: Color., type: string}
+      iconUrl: {description: Icon URL., type: string}
+  VisualforceLayoutComponentRepresentation:
+    allOf:
+    - {$ref: '#/definitions/AbstractRecordLayoutComponentRepresentation'}
+    - type: object
+      description: Visualforce record layout component.
+      properties:
+        height: {description: Height, type: string}
+        showLabel: {description: Indicates whether to show the section label with this VF component.,
+          type: boolean}
+        showScroll: {description: Show scroll, type: boolean}
+        visualforceUrl: {description: Visualforce URL., type: string}
+        width: {description: Width, type: string}
+
+
+
+
+
+

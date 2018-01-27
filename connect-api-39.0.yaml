@@ -1,0 +1,135 @@
+swagger: '2.0'
+info: {title: Salesforce Connect API, description: '', version: 39.0-2017.2.7.8.26}
+schemes: [https]
+produces: [application/json]
+basePath: /services/data/v39.0
+paths: {}
+definitions:
+  BatchApexErrorResultRepresentation:
+    allOf:
+    - {$ref: '#/definitions/BatchResultRepresentation'}
+    - type: object
+      description: Generic batch result for a batch request that results in an error in Apex.
+      properties:
+        result: {description: What went wrong., type: object}
+  BatchCollectionInputRepresentation:
+    type: object
+    description: A collection of inputs of the same type for a batch request.
+    properties:
+      inputs:
+        description: Collection of batch inputs of the same type to be processed together.
+        type: array
+        items: {type: object}
+  BatchErrorRepresentation:
+    type: object
+    description: An representation of a batch error.
+    properties:
+      errorCode: {description: The error code for an individual batch result., type: string}
+      message: {description: The error message for an individual batch result., type: string}
+  BatchErrorResultRepresentation:
+    allOf:
+    - {$ref: '#/definitions/BatchResultRepresentation'}
+    - type: object
+      description: Generic batch result for a batch request that results in an error.
+      properties:
+        result:
+          description: Dependent on the type of batch request.
+          type: array
+          items: {$ref: '#/definitions/BatchErrorRepresentation'}
+  BatchInputList:
+    type: object
+    description: Wraps a list of batch inputs.
+    properties:
+      inputs:
+        description: A list of batch inputs of the same type.
+        type: array
+        items: {type: object}
+  BatchInputRepresentation:
+    type: object
+    description: Describes a single input in a batch request.
+    properties:
+      binaryPartNames:
+        description: List of the name parameters in the Content-Disposition header of the binary body parts to include with this subrequest. Different resources expect different values. This property is optional. If this value exists, the corresponding binary part must be included in the request.
+        type: array
+        items: {type: string}
+      richInput: {description: A single input body for the request. The type depends on the specific endpoint.,
+        type: object}
+  BatchJavaErrorResultRepresentation:
+    allOf:
+    - {$ref: '#/definitions/BatchResultRepresentation'}
+    - type: object
+      description: Generic batch result for a batch request that results in an error in Java.
+      properties:
+        result: {description: What went wrong. This is a ConnectInJavaException.,
+          type: object}
+  BatchRepresentation:
+    type: object
+    description: Result of an entire batch request operation. Results are ordered in the same order in which the requests were given. Results may either be a successful result with a response body, a successful result without a response body, or an error result without a response body. Success and error are determined by the status code in each result.
+    properties:
+      hasErrors: {description: True if at least one of the results is an error (a status code in the 400 or 500 range).,
+        type: boolean}
+      results: {description: Collection of batch result items. One for each request input.,
+        type: object}
+  BatchResultRepresentation:
+    type: object
+    description: Describes the result of an individual request in a batch request.
+    properties:
+      result: {description: Dependent on the type of batch request., type: object}
+      statusCode: {description: An HTTP status code indicating the status of this individual request in the batch.,
+        type: integer}
+  BatchRichErrorResultRepresentation:
+    allOf:
+    - {$ref: '#/definitions/BatchResultRepresentation'}
+    - type: object
+      description: Batch result error with a sub-representation.
+      properties:
+        result: {description: Rich error representation., type: object}
+  BatchSubRequestRichInputRepresentation:
+    type: object
+    description: Internal wrapper for a generic batch sub request.
+    properties:
+      parseTree: {description: Parse tree for the sub request., type: object}
+  BatchSuccessResultRepresentation:
+    allOf:
+    - {$ref: '#/definitions/BatchResultRepresentation'}
+    - type: object
+      description: Generic batch result for a successfull request.
+      properties:
+        result: {description: Dependent on the type of batch request., type: object}
+  BinaryPartNameInputList:
+    type: object
+    description: Wraps a list of binary part names.
+    properties:
+      binaryPartNames:
+        description: List of binary part names.
+        type: array
+        items: {type: string}
+  ConnectInputRepresentation:
+    type: object
+    description: Base class for all Connect input representations.
+    properties: {}
+  EmptyRepresentation:
+    type: object
+    description: A representation with no properties. For example, a 204 No Content in REST returns an empty representation.
+    properties: {}
+  ErrorWithOutputRepresentation:
+    type: object
+    description: In rare cases an error message of a failing operation is not enough to describe the reason for a failure. For example, when a conflicting precondition exists of certain operations, the error result can include the information about that which caused the conflict. This object is an error object that contains that extra needed information for those operations.
+    properties:
+      enhancedErrorType:
+        description: Indicates the type of the 'output' property.
+        type: string
+        enum: [GroupMembershipRequestError, InvalidIdsError, RecordError]
+      message: {description: Human readable message describing the error., type: string}
+      output: {description: Any of the other objects in the Connect API that provide additional context to the error.,
+        $ref: '#/definitions/ConnectRepresentation'}
+  StreamedRepresentation:
+    type: object
+    description: Internal use only.
+    properties: {}
+
+
+
+
+
+
